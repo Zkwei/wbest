@@ -85,8 +85,8 @@ int main(int argc, char **argv)
 	case 'n':
 	  printf("number of packet pair: %d\n", atoi(optarg));
 	  i_PktNumbPP = atoi(optarg);
-	  if (i_PktNumbPP > MAX_PKT_NUM / 2)
-	    i_PktNumbPP = MAX_PKT_NUM / 2;
+	  if (i_PktNumbPP > MAX_PKT_NUM / 3)
+	    i_PktNumbPP = MAX_PKT_NUM / 3;
 	  break;
 
 	case 'm':
@@ -289,6 +289,11 @@ void SendPP(int i_PktNumb)
     nRet = send(udpSocket, (char *) &pp_pkt, i_PktSize, 0);
 
     // Generate 2nd packet in the pair
+    gettimeofday(&time_stamp, NULL);
+    pp_pkt.tstamp = (time_stamp.tv_sec - init_stamp.tv_sec) * 1000000 +
+                    (time_stamp.tv_usec - init_stamp.tv_usec);
+    nRet = send(udpSocket, (char *) &pp_pkt, i_PktSize, 0);
+
     gettimeofday(&time_stamp, NULL);
     pp_pkt.tstamp = (time_stamp.tv_sec - init_stamp.tv_sec) * 1000000 +
                     (time_stamp.tv_usec - init_stamp.tv_usec);
