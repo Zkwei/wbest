@@ -380,7 +380,7 @@ double ProcessPP (int i_PktNumb)
 
 	  disperse[count] = ((arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
 	    (arrival[i+1].tv_usec - arrival[i].tv_usec) + 
-      (arrival[i+2].tv_sec - arrival[i].tv_sec) * 1000000 +
+      (arrival[i+2].tv_sec - arrival[i+1].tv_sec) * 1000000 +
 	    (arrival[i+2].tv_usec - arrival[i].tv_usec)) / 2;
 
 	  ce[count] = (psize[i+1]*8.0/disperse[count]);              // compute effective capacity
@@ -391,7 +391,9 @@ double ProcessPP (int i_PktNumb)
 	      sum += ce[count];
 	      printf("[%2d]: %d recv in %d usec - Ce: %7.2f Mbps, sendRate: %7.2f Mbps\n", 
 		     seq[i+1], 2 * psize[i+1], disperse[count], ce[count], sr[count]);
-
+        printf("disperse: [1] %d usec, [2] %d usec\n", (arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
+	    (arrival[i+1].tv_usec - arrival[i].tv_usec), (arrival[i+2].tv_sec - arrival[i+1].tv_sec) * 1000000 +
+	    (arrival[i+2].tv_usec - arrival[i].tv_usec));
 	      count ++ ; // increase valid packet pair by 1
 	    }
 
