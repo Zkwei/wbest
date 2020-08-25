@@ -394,6 +394,8 @@ double ProcessPP (int i_PktNumb)
         printf("disperse: [1] %d usec, [2] %d usec\n", (arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
 	    (arrival[i+1].tv_usec - arrival[i].tv_usec), (arrival[i+2].tv_sec - arrival[i+1].tv_sec) * 1000000 +
 	    (arrival[i+2].tv_usec - arrival[i].tv_usec));
+        printf("send interval: [1] %d usec [2] %d usec\n", sendtime[i+1] - sendtime[i], 
+            sendtime[i+2] - sendtime[i+1]);
 	      count ++ ; // increase valid packet pair by 1
 	    }
 
