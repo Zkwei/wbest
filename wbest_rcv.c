@@ -310,7 +310,7 @@ void UDPReceive (enum Options option, int i_PktNumb)
   InitStorage(); 
 
   // if packetpair, double the packet number.
-  if (option == PacketPair) i_PktNumb = 3 * i_PktNumb;
+  if (option == PacketPair) i_PktNumb = 4 * i_PktNumb;
 
   // Use select to control timeout for 300 ms
   FD_ZERO(&rfds);
@@ -364,7 +364,7 @@ double ProcessPP (int i_PktNumb)
   int processed = 0, count=0, i=0;
   double sum = 0., mean = 0., median=0.;
 
-  for (i=0; i<i_PktNumb*3-1; i++) 
+  for (i=0; i<i_PktNumb*4-1; i++) 
     {
       if (seq[i] == seq[i+1] && seq[i] >= 0 ) //packet pair not lost
 	{
@@ -381,21 +381,24 @@ double ProcessPP (int i_PktNumb)
 	  disperse[count] = ((arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
 	    (arrival[i+1].tv_usec - arrival[i].tv_usec) + 
       (arrival[i+2].tv_sec - arrival[i+1].tv_sec) * 1000000 +
-	    (arrival[i+2].tv_usec - arrival[i].tv_usec)) / 2;
+	    (arrival[i+2].tv_usec - arrival[i+1].tv_usec) + 
+      (arrival[i+3].tv_sec - arrival[i+2].tv_sec) * 1000000 +
+	    (arrival[i+3].tv_usec - arrival[i+2].tv_usec)) / 3;
 
 	  ce[count] = (psize[i+1]*8.0/disperse[count]);              // compute effective capacity
-	  sr[count] = 2 * psize[i+1]*8.0/(sendtime[i+2]-sendtime[i]);    // compute sending rate
+	  sr[count] = 3 * psize[i+1]*8.0/(sendtime[i+3]-sendtime[i]);    // compute sending rate
 	  
 	  if (ce[count] > 0.) 
 	    {
 	      sum += ce[count];
 	      printf("[%2d]: %d recv in %d usec - Ce: %7.2f Mbps, sendRate: %7.2f Mbps\n", 
 		     seq[i+1], 2 * psize[i+1], disperse[count], ce[count], sr[count]);
-        printf("disperse: [1] %d usec, [2] %d usec\n", (arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
+        printf("disperse: [1] %d usec, [2] %d usec, [3] %d usec\n", (arrival[i+1].tv_sec - arrival[i].tv_sec) * 1000000 +
 	    (arrival[i+1].tv_usec - arrival[i].tv_usec), (arrival[i+2].tv_sec - arrival[i+1].tv_sec) * 1000000 +
-	    (arrival[i+2].tv_usec - arrival[i].tv_usec));
-        printf("send interval: [1] %d usec [2] %d usec\n", sendtime[i+1] - sendtime[i], 
-            sendtime[i+2] - sendtime[i+1]);
+	    (arrival[i+2].tv_usec - arrival[i+1].tv_usec), (arrival[i+3].tv_sec - arrival[i+2].tv_sec) * 1000000 +
+	    (arrival[i+3].tv_usec - arrival[i+2].tv_usec));
+        printf("send interval: [1] %d usec [2] %d usec [3] %d usec\n", sendtime[i+1] - sendtime[i], 
+            sendtime[i+2] - sendtime[i+1], sendtime[i+3] - sendtime[i+2]);
 	      count ++ ; // increase valid packet pair by 1
 	    }
 

@@ -299,6 +299,11 @@ void SendPP(int i_PktNumb)
                     (time_stamp.tv_usec - init_stamp.tv_usec);
     nRet = send(udpSocket, (char *) &pp_pkt, i_PktSize, 0);
 
+    gettimeofday(&time_stamp, NULL);
+    pp_pkt.tstamp = (time_stamp.tv_sec - init_stamp.tv_sec) * 1000000 +
+                    (time_stamp.tv_usec - init_stamp.tv_usec);
+    nRet = send(udpSocket, (char *) &pp_pkt, i_PktSize, 0);
+
     usleep (10000);
     pp_pkt.seq++;
     
